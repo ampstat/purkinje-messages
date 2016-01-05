@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Message/event type for communication with browser and test runner"""
-from builtins import object, basestring
+from builtins import object
 
 from datetime import datetime
 from copy import deepcopy
@@ -77,8 +77,8 @@ class Event(with_metaclass(abc.ABCMeta, object)):
                 timestamp)
 
         base_schema = {
-            Required('type'): basestring,
-            Required('timestamp'): basestring,
+            Required('type'): str,
+            Required('timestamp'): str,
         }
         schema = deepcopy(schema)
         schema.update(base_schema)
@@ -90,7 +90,7 @@ class Event(with_metaclass(abc.ABCMeta, object)):
         """
         try:
             self._schema(self.data)
-        except TypeError, e:
+        except TypeError as e:
             raise MessageException('Validation failed: {0} ({1})'
                                    .format(e, self.data))
 
@@ -175,11 +175,11 @@ class TestCaseFinishedEvent(Event):
             duration:   duration of execution, in milliseconds
             suite_hash: hash of suite_name for correlation (e.g. MD5)
         """
-        schema = {Required('file'): basestring,
-                  Required('name'): basestring,
-                  Required('verdict'): basestring,
+        schema = {Required('file'): str,
+                  Required('name'): str,
+                  Required('verdict'): str,
                   Required('duration'): int,
-                  Required('suite_hash'): basestring}
+                  Required('suite_hash'): str}
         kwargs['type'] = MsgType.TC_FINISHED
         super(TestCaseFinishedEvent, self).__init__(schema,
                                                     **kwargs)
@@ -212,8 +212,8 @@ class SessionStartedEvent(Event):
            tc_count: number of test cases in suite. Set to -1 if number
                      is not known beforehand
         """
-        schema = {Required('suite_name'): basestring,
-                  Required('suite_hash'): basestring,
+        schema = {Required('suite_name'): str,
+                  Required('suite_hash'): str,
                   Required('tc_count'): int}
         kwargs['type'] = MsgType.SESSION_STARTED
         super(SessionStartedEvent, self).__init__(
@@ -231,7 +231,7 @@ class SessionTerminatedEvent(Event):
         """Message fields:
            suite_hash: hash of suite_name for correlation (e.g. MD5)
         """
-        schema = {Required('suite_hash'): basestring}
+        schema = {Required('suite_hash'): str}
         kwargs['type'] = MsgType.SESSION_TERMINATED
         super(SessionTerminatedEvent, self).__init__(
             schema,
